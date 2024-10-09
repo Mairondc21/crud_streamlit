@@ -1,4 +1,4 @@
-version: '3.12.1'
+
 services:
   postgres:
     image: postgres:latest
@@ -9,13 +9,35 @@ services:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
     networks:
-      - mynetork
+      - mynetwork
 
   backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    environment:
+      DATABASE_URL: postgresql://user:password@postgres/mydatabase
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    networks:
+      - mynetwork
   frontend:
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "8501:8501"
+    networks:
+      - mynetwork
 
 networks:
-  mynetork:
+  mynetwork:
 
 volumes:
   postgres_data:
